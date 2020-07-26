@@ -13,6 +13,7 @@ import { resolvers, typeDefs } from "./graphql/resolvers";
 
 import "./index.css";
 import { default as App } from "./App/App.container";
+import { default as data } from "./graphql/initial-data";
 
 const httpLink = createHttpLink({
   uri: "https://crwn-clothing.com",
@@ -27,15 +28,7 @@ const client = new ApolloClient({
   resolvers,
 });
 
-client.writeData({
-  data: {
-    cartHidden: true,
-    cartItems: [],
-    itemCount: 0,
-    cartTotal: 0,
-    currentUser: null,
-  },
-});
+client.writeData({ data });
 
 ReactDOM.render(
   <ApolloProvider client={client}>

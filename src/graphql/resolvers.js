@@ -48,6 +48,23 @@ const GET_CURRENT_USER = gql`
   }
 `;
 
+const updateCartItemsRelatedData = (cache, newCartItems) => {
+  cache.writeQuery({
+    query: GET_ITEM_COUNT,
+    data: { itemCount: getCartItemCount(newCartItems) },
+  });
+
+  cache.writeQuery({
+    query: GET_CART_TOTAL,
+    data: { cartTotal: getCartItemsTotalCount(newCartItems) },
+  });
+
+  cache.writeQuery({
+    query: GET_CART_ITEMS,
+    data: { cartItems: newCartItems },
+  });
+};
+
 export const resolvers = {
   Mutation: {
     toggleCartHidden: (_root, _args, { cache }) => {
@@ -70,20 +87,7 @@ export const resolvers = {
 
       const newCartItems = addItemToCart(cartItems, item);
 
-      cache.writeQuery({
-        query: GET_ITEM_COUNT,
-        data: { itemCount: getCartItemCount(newCartItems) },
-      });
-
-      cache.writeQuery({
-        query: GET_CART_ITEMS,
-        data: { cartItems: newCartItems },
-      });
-
-      cache.writeQuery({
-        query: GET_CART_TOTAL,
-        data: { cartTotal: getCartItemsTotalCount(newCartItems) },
-      });
+      updateCartItemsRelatedData(cache, newCartItems);
 
       return newCartItems;
     },
@@ -95,10 +99,7 @@ export const resolvers = {
 
       const newCartItems = removeItemFromCart(cartItems, item);
 
-      cache.writeQuery({
-        query: GET_CART_ITEMS,
-        data: { cartItems: newCartItems },
-      });
+      updateCartItemsRelatedData(cache, newCartItems);
 
       return newCartItems;
     },
@@ -110,10 +111,7 @@ export const resolvers = {
 
       const newCartItems = clearItemFromCart(cartItems, item);
 
-      cache.writeQuery({
-        query: GET_CART_ITEMS,
-        data: { cartItems: newCartItems },
-      });
+      updateCartItemsRelatedData(cache, newCartItems);
 
       return newCartItems;
     },
